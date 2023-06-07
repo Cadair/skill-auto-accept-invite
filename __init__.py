@@ -1,10 +1,13 @@
 from textwrap import dedent
+import logging
 
 from opsdroid.connector.matrix import ConnectorMatrix
 from opsdroid.connector.matrix.events import GenericMatrixRoomEvent
 from opsdroid.events import Message, UserInvite, JoinRoom
 from opsdroid.matchers import match_regex, match_event
 from opsdroid.skill import Skill
+
+_LOGGER = logging.getLogger(__name__)
 
 INVITEBOT_COMMAND_PREFIX = "!"
 INVITEBOT_COMMANDS = {}
