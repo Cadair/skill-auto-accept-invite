@@ -2,7 +2,7 @@ from textwrap import dedent
 
 from opsdroid.connector.matrix import ConnectorMatrix
 from opsdroid.connector.matrix.events import GenericMatrixRoomEvent
-from opsdroid.events import Message, UserInvite
+from opsdroid.events import Message, UserInvite, JoinRoom
 from opsdroid.matchers import match_regex
 from opsdroid.skill import Skill
 
