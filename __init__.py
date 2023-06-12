@@ -1,6 +1,7 @@
 from textwrap import dedent
 import logging
 
+import nio
 from opsdroid.connector.matrix import ConnectorMatrix
 from opsdroid.connector.matrix.events import GenericMatrixRoomEvent
 from opsdroid.events import Message, UserInvite, JoinRoom
@@ -55,7 +56,7 @@ class AcceptInvite(Skill):
 
         admin_room = self.matrix_connector.config["rooms"].get("auto-accept-invite")
         if admin_room is not None and not admin_room.startswith("!"):
-            response = await self.connection.room_resolve_alias(admin_room)
+            response = await self.matrix_connector.connection.room_resolve_alias(admin_room)
             if isinstance(response, nio.RoomResolveAliasError):
                 _LOGGER.error(
                     f"Error resolving room id for {self.admin_room}: {response.message} (status code {response.status_code})"
@@ -67,10 +68,12 @@ class AcceptInvite(Skill):
         return self._admin_room
 
     @regex_command("rooms", "print a list of all rooms this bot is in.")
-    async def bands(self, message):
+    async def rooms(self, message):
         if message.target != await self.admin_room_id():
             return
-        await message.respond("Not Implemented yet")
+
+        for room in self.matrix_connector.connection.rooms.values():
+            await message.respond(f"{room.display_name} - {room.member_count} members")
 
     @regex_command("stop", "stop accepting invites")
     async def stop(self, message):
