@@ -64,6 +64,8 @@ class AcceptInvite(Skill):
                 admin_room = response.room_id
         self._admin_room = admin_room
 
+        return self._admin_room
+
     @regex_command("rooms", "print a list of all rooms this bot is in.")
     async def bands(self, message):
         if message.target != await self.admin_room_id():
@@ -74,13 +76,15 @@ class AcceptInvite(Skill):
     async def stop(self, message):
         if message.target != await self.admin_room_id():
             return
-        await message.respond("Not Implemented yet.")
+        self._auto_invite = False
+        await message.respond("Stopped invites until next restart.")
 
     @regex_command("start", "start accepting invites")
     async def start(self, message):
         if message.target != await self.admin_room_id():
             return
-        await message.respond("Not Implemented yet.")
+        self._auto_invite = True
+        await message.respond("Started invites.")
 
     @regex_command("help", "print this help message")
     async def help(self, message):
@@ -102,6 +106,8 @@ class AcceptInvite(Skill):
         _LOGGER.info("Got room invite.")
         if await self.auto_invite():
             await invite.respond(JoinRoom())
+            # TODO: More room details
+            await self.opsdroid.send(Message(f"Accepted invite by {invite.user} ({invite.user_id}) to room {invite.target}.", target=await self.admin_room_id()))
             _LOGGER.info("Accepted room invite.")
         else:
             _LOGGER.info("Rejected room invite because auto invite is off.")
